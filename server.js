@@ -42,11 +42,20 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use('/api/shorturl/new',(req,res,next)=>{
   
   dns.resolve('freecodecamp.com', function (err, addresses, family) {
-    
+    let u;
     if(!err){
       console.log(addresses);
       tot++;
-      var url = new Url({"fwdId":tot,"url":req.body.url});
+      if(req.body.url[0]!='h'){
+        if(req.body.url[0]!="w"&&req.body.url[1]!="w"&&req.body.url[1]!="w"){
+          u = 'https://www.' + req.body.url;
+        }else{
+          u = 'https://' + req.body.url;
+        }
+      }else{
+        u = req.body.url;
+      }
+      var url = new Url({"fwdId":tot,"url":u});
       url.save((err,data)=>{
         if(!err){
           console.log(data);
@@ -54,10 +63,10 @@ app.use('/api/shorturl/new',(req,res,next)=>{
           console.log(err);
         }
       })
-      res.json({"original_url":req.body.url,"short_url":tot});
+      res.json({"original_url":u,"short_url":tot});
       
     }else{
-      res.json({"original_url":req.body.url,"valid":false});
+      res.json({"original_url":u,"valid":false});
     }
     
   });
